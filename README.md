@@ -15,7 +15,7 @@ Automated smoke tests for the Pulse ecosystem APIs with self-healing capabilitie
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-org/pulse-smoketests.git
+git clone https://github.com/anandroid/pulse-smoketests.git
 cd pulse-smoketests
 ```
 
@@ -24,7 +24,21 @@ cd pulse-smoketests
 npm install
 ```
 
-3. Configure environment variables:
+3. Configure environment variables (choose one method):
+
+### Option A: Fetch from Google Cloud (Recommended)
+```bash
+# Authenticate with Google Cloud
+gcloud auth application-default login
+
+# Fetch secrets automatically
+npm run fetch-secrets
+
+# Run tests with fetched secrets
+npm run smoke
+```
+
+### Option B: Manual Configuration
 ```bash
 cp .env.example .env
 # Edit .env with your credentials
@@ -32,7 +46,10 @@ cp .env.example .env
 
 4. Run tests locally:
 ```bash
-# Run all smoke tests
+# Run all smoke tests with GCP secrets
+npm run smoke:gcp
+
+# Run smoke tests (requires .env)
 npm run smoke
 
 # Run Jest tests
@@ -57,20 +74,35 @@ Optional variables:
 
 ## GitHub Actions
 
+### Automated Setup (Recommended)
+Sync secrets from Google Cloud to GitHub:
+```bash
+# Login to GitHub CLI
+gh auth login
+
+# Sync secrets from GCP to GitHub
+npm run setup-github
+```
+
 ### Scheduled Tests
-Tests run automatically every hour. Configure in `.github/workflows/smoke-tests.yml`.
+Tests run automatically every hour. Two workflows available:
+- `smoke-tests.yml`: Uses GitHub secrets
+- `smoke-tests-gcp.yml`: Fetches secrets dynamically from Google Cloud
 
 ### Manual Tests
 Trigger specific tests via GitHub Actions UI with custom parameters.
 
 ### Required Secrets
-Configure these in your GitHub repository settings:
+If using manual setup, configure these in your GitHub repository settings:
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `PULSE_API_BASE_URL`
 - `SLACK_WEBHOOK_URL` (optional)
 - `DISCORD_WEBHOOK_URL` (optional)
+
+For GCP integration, you'll also need:
+- `WIF_PROVIDER`: Workload Identity Federation provider
+- `WIF_SERVICE_ACCOUNT`: Service account for authentication
 
 ## Test Structure
 
