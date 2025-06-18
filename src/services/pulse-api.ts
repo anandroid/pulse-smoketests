@@ -154,7 +154,7 @@ class PulseAPIService {
 
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await this.client.get('/health', {
+      const response = await this.client.get('/', {
         timeout: 5000,
       });
       return response.status === 200;

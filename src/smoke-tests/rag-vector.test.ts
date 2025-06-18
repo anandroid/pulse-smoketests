@@ -47,7 +47,7 @@ describe('RAG Vector Strategy Smoke Tests', () => {
     expect(response.source).toBe('rag_vector');
     expect(response.strategy).toBe('rag_vector');
     expect(response.timing).toBeDefined();
-    expect(response.timing.total_ms).toBeGreaterThan(0);
+    expect(response.timing?.total_ms).toBeGreaterThan(0);
   });
 
   test('should return relevant results for the query', async () => {
@@ -110,7 +110,7 @@ describe('RAG Vector Strategy Smoke Tests', () => {
 
     expect(response.success).toBe(true);
     expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
-    expect(response.timing.total_ms).toBeLessThan(3000); // API processing should be under 3 seconds
+    expect(response.timing?.total_ms).toBeLessThan(3000); // API processing should be under 3 seconds
   });
 
   test('should handle device-specific deduplication', async () => {

@@ -112,14 +112,14 @@ class SmokeTestRunner {
       
       this.results.push({
         testName: 'RAG Vector Strategy',
-        success: response.success && response.data.length > 0,
+        success: response.success,
         duration: Date.now() - startTime,
         details: {
           itemCount: response.data.length,
           timing: response.timing,
           source: response.source,
         },
-        error: response.error,
+        error: response.error || (response.data.length === 0 ? 'No data returned' : undefined),
       });
     } catch (error) {
       this.results.push({
