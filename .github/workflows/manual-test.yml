@@ -1,0 +1,74 @@
+name: Manual Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_query:
+        description: 'Search query to test'
+        required: false
+        default: 'pizza deals today'
+      test_area:
+        description: 'Area to test'
+        required: false
+        default: 'tampa-bay'
+      test_strategy:
+        description: 'Strategy to test'
+        required: false
+        default: 'rag_vector'
+        type: choice
+        options:
+          - query_cache
+          - rag_cache
+          - rag_vector
+          - rag_hybrid
+          - web_search_llm
+          - combined
+      enable_notifications:
+        description: 'Send notifications on failure'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  manual-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run specific test
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        PULSE_API_BASE_URL: ${{ secrets.PULSE_API_BASE_URL }}
+        TEST_QUERY: ${{ github.event.inputs.test_query }}
+        TEST_AREA: ${{ github.event.inputs.test_area }}
+        TEST_STRATEGY: ${{ github.event.inputs.test_strategy }}
+        ENABLE_SLACK_NOTIFICATIONS: ${{ github.event.inputs.enable_notifications }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        LOG_LEVEL: 'debug'
+      run: |
+        echo "Testing strategy: $TEST_STRATEGY"
+        echo "Query: $TEST_QUERY"
+        echo "Area: $TEST_AREA"
+        npm run smoke
+
+    - name: Generate test report
+      if: always()
+      run: |
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- **Strategy:** ${{ github.event.inputs.test_strategy }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Query:** ${{ github.event.inputs.test_query }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Area:** ${{ github.event.inputs.test_area }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
