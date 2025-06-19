@@ -25,20 +25,23 @@ class SmokeTestRunner {
       // 2. Test Supabase connection
       await this.testSupabaseConnection();
       
-      // 3. Test RAG Vector strategy
+      // 3. Test Query Cache strategy (fastest)
+      await this.testQueryCacheStrategy();
+      
+      // 4. Test RAG Vector strategy
       await this.testRagVectorStrategy();
       
-      // 4. Test other strategies
+      // 5. Test other strategies
       await this.testAllStrategies();
       
-      // 5. Test performance
+      // 6. Test performance
       await this.testPerformance();
       
-      // 6. Generate report
+      // 7. Generate report
       const report = this.generateReport();
       logger.info('Test Report:', report);
       
-      // 7. Send notifications if failures
+      // 8. Send notifications if failures
       if (report.hasFailures) {
         await notificationService.sendTestFailureAlert(report);
       }
@@ -82,6 +85,62 @@ class SmokeTestRunner {
     } catch (error) {
       this.results.push({
         testName: 'Supabase Connection',
+        success: false,
+        duration: Date.now() - startTime,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  private async testQueryCacheStrategy(): Promise<void> {
+    const startTime = Date.now();
+    try {
+      // Find a valid cache entry to test with
+      const cacheEntries = await supabaseService.getCacheEntriesByPrompt('', 5);
+      const validEntry = cacheEntries.find(entry => 
+        entry.response?.data?.length > 0 && 
+        new Date(entry.expire_at) > new Date()
+      );
+
+      if (!validEntry) {
+        this.results.push({
+          testName: 'Query Cache Strategy',
+          success: false,
+          duration: Date.now() - startTime,
+          error: 'No valid cache entries found for testing',
+        });
+        return;
+      }
+
+      // Test with the exact query from cache
+      const request: SearchRequest = {
+        query: validEntry.prompt,
+        area: validEntry.area,
+        region: validEntry.region || undefined,
+        country: validEntry.country || undefined,
+        timeline: validEntry.timeline || undefined,
+        buttonClickCount: validEntry.button_click_count || undefined,
+        enableFallbacks: false,
+      };
+
+      const response = await pulseAPIService.testQueryCache(request);
+      
+      this.results.push({
+        testName: 'Query Cache Strategy',
+        success: response.success,
+        duration: Date.now() - startTime,
+        details: {
+          itemCount: response.data.length,
+          timing: response.timing,
+          source: response.source,
+          cacheHit: response.meta?.cache_hit,
+          testedQuery: validEntry.prompt,
+        },
+        error: response.error,
+      });
+    } catch (error) {
+      this.results.push({
+        testName: 'Query Cache Strategy',
         success: false,
         duration: Date.now() - startTime,
         error: error instanceof Error ? error.message : 'Unknown error',

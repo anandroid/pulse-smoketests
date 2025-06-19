@@ -1,0 +1,145 @@
+{
+  "testEntries": [
+    {
+      "name": "Basic Events Search",
+      "request": {
+        "query": "events tonight",
+        "area": "tampa-bay"
+      },
+      "expectedFields": ["id", "title", "category", "date", "location"]
+    },
+    {
+      "name": "Deals Search with Timeline",
+      "request": {
+        "query": "restaurant deals today",
+        "area": "miami",
+        "region": "FL",
+        "country": "US",
+        "timeline": "today"
+      },
+      "expectedFields": ["id", "title", "category", "discount", "price"]
+    },
+    {
+      "name": "Button Click Count Search",
+      "request": {
+        "query": "pizza specials",
+        "area": "orlando",
+        "buttonClickCount": "1_deals"
+      },
+      "expectedFields": ["id", "title", "category", "discount"]
+    },
+    {
+      "name": "Full Parameters Search",
+      "request": {
+        "query": "live music venues",
+        "area": "tampa-bay",
+        "region": "FL",
+        "country": "US",
+        "timeline": "this weekend",
+        "category": "events",
+        "buttonClickCount": "2_events",
+        "deviceId": "test-device-123",
+        "enableFallbacks": false
+      },
+      "expectedFields": ["id", "title", "category", "date", "venue"]
+    },
+    {
+      "name": "News Search",
+      "request": {
+        "query": "local news updates",
+        "area": "miami",
+        "category": "news"
+      },
+      "expectedFields": ["id", "title", "category", "source", "published_date"]
+    },
+    {
+      "name": "Reels/Video Search",
+      "request": {
+        "query": "food videos",
+        "area": "orlando",
+        "category": "reels"
+      },
+      "expectedFields": ["id", "title", "category", "duration", "thumbnail_url"]
+    }
+  ],
+  "sampleResponses": {
+    "events": {
+      "id": "evt-001",
+      "title": "Jazz Night at Blue Note",
+      "category": "events",
+      "description": "Live jazz performance featuring local artists",
+      "date": "2025-06-20",
+      "time": "8:00 PM",
+      "location": "Blue Note Jazz Club",
+      "address": "123 Main St, Tampa, FL",
+      "price": "$25",
+      "image_url": "https://example.com/jazz-night.jpg",
+      "source": "Blue Note",
+      "source_url": "https://bluenote.com/events"
+    },
+    "deals": {
+      "id": "deal-001",
+      "title": "50% Off All Pizzas",
+      "category": "deals",
+      "description": "Half price on all pizzas during happy hour",
+      "discount": "50%",
+      "price": "$10-15",
+      "valid_until": "2025-06-20",
+      "restaurant": "Tony's Pizza",
+      "address": "456 Ocean Dr, Miami, FL",
+      "image_url": "https://example.com/pizza-deal.jpg",
+      "source": "Tony's Pizza",
+      "source_url": "https://tonyspizza.com/deals"
+    },
+    "news": {
+      "id": "news-001",
+      "title": "New Tech Hub Opens in Orlando",
+      "category": "news",
+      "description": "A new technology innovation center opens downtown",
+      "published_date": "2025-06-19",
+      "author": "Local News Team",
+      "source": "Orlando Daily",
+      "source_url": "https://orlandodaily.com/tech-hub",
+      "image_url": "https://example.com/tech-hub.jpg"
+    },
+    "reels": {
+      "id": "reel-001",
+      "title": "Best Tacos in Tampa",
+      "category": "reels",
+      "description": "Tour of the top taco spots in Tampa Bay",
+      "duration": "2:45",
+      "views": 15000,
+      "creator": "@tampafoodie",
+      "thumbnail_url": "https://example.com/taco-thumb.jpg",
+      "video_url": "https://example.com/taco-video.mp4",
+      "source": "Instagram",
+      "source_url": "https://instagram.com/reel/123"
+    }
+  },
+  "errorCases": [
+    {
+      "name": "Missing Query",
+      "request": {
+        "area": "tampa-bay"
+      },
+      "expectedError": "Query parameter is required"
+    },
+    {
+      "name": "Empty Query",
+      "request": {
+        "query": "",
+        "area": "miami"
+      },
+      "expectedError": "Query parameter is required"
+    },
+    {
+      "name": "Invalid Strategy",
+      "endpoint": "/api/search/invalid_strategy",
+      "request": {
+        "query": "test",
+        "area": "test"
+      },
+      "expectedError": "Invalid waterfall strategy"
+    }
+  ]
+}

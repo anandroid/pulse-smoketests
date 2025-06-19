@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit",
     "fetch-secrets": "node scripts/fetch-secrets.js",
     "setup-github": "node scripts/setup-github-secrets.js",
-    "smoke:gcp": "npm run fetch-secrets && npm run smoke"
+    "smoke:gcp": "npm run fetch-secrets && npm run smoke",
+    "find-cache": "node scripts/find-cache-entry.js",
+    "test:query-cache": "jest src/smoke-tests/query-cache.test.ts"
   },
   "keywords": ["smoke-tests", "api-testing", "pulse"],
   "author": "Pulse Team",
