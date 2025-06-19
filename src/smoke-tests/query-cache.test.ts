@@ -68,12 +68,22 @@ describe('Query Cache Smoke Tests', () => {
     // 3. Match our test location
     const cacheEntries = await supabaseService.getCacheEntriesByPrompt('', 10);
     
-    // Filter for valid entries
+    // Filter for valid entries (check both 'response' and 'result' fields)
     validCacheEntry = cacheEntries.find(entry => {
-      return entry.response && 
-             entry.response.data && 
-             entry.response.data.length > 0 &&
-             new Date(entry.expire_at) > new Date();
+      const hasExpired = new Date(entry.expire_at) <= new Date();
+      if (hasExpired) return false;
+      
+      // Check 'response' field first
+      if (entry.response?.data && Array.isArray(entry.response.data) && entry.response.data.length > 0) {
+        return true;
+      }
+      
+      // Check 'result' field (legacy format)
+      if (entry.result?.data && Array.isArray(entry.result.data) && entry.result.data.length > 0) {
+        return true;
+      }
+      
+      return false;
     });
 
     if (!validCacheEntry) {
