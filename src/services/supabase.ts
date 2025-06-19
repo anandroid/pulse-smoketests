@@ -10,7 +10,8 @@ export interface QueryCacheEntry {
   country: string | null;
   timeline: string | null;
   button_click_count: string | null;
-  response: any;
+  response?: any;
+  result?: any; // Legacy field
   model: string;
   provider: string;
   timestamp: string;

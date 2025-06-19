@@ -19,7 +19,9 @@
     "fetch-cache": "node scripts/fetch-query-cache-entries.js",
     "fetch-cache-ts": "tsx scripts/fetch-cache-data.ts",
     "test:query-cache": "jest src/smoke-tests/query-cache.test.ts",
-    "test:cache-specific": "jest src/smoke-tests/query-cache-specific.test.ts"
+    "test:cache-specific": "jest src/smoke-tests/query-cache-specific.test.ts",
+    "test:cache-dynamic": "jest src/smoke-tests/query-cache-dynamic.test.ts",
+    "test:all-cache": "jest src/smoke-tests/query-cache*.test.ts"
   },
   "keywords": ["smoke-tests", "api-testing", "pulse"],
   "author": "Pulse Team",
