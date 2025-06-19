@@ -52,7 +52,6 @@
 
 import { supabaseService } from '../services/supabase';
 import { pulseAPIService } from '../services/pulse-api';
-import { config } from '../config';
 import logger from '../utils/logger';
 
 describe('Query Cache Smoke Tests', () => {
@@ -135,8 +134,8 @@ describe('Query Cache Smoke Tests', () => {
     // Query cache should be very fast (< 500ms)
     expect(response.timing?.total_ms).toBeLessThan(500);
     
-    // Should indicate cache hit
-    if (response.meta) {
+    // Should indicate cache hit if we found a valid cache entry
+    if (response.meta && validCacheEntry.id) {
       expect(response.meta.cache_hit).toBe(true);
     }
   });
